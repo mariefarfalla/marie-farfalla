@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2E2119">
+<title>Marie Farfalla — Gestão do ateliê</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A6%8B%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = { theme: { extend: { colors: {
+  page:'var(--page)', card:'var(--card)', ink:'var(--ink)', mute:'var(--mute)', line:'var(--line)', sand:'var(--sand)',
+  bronze:'var(--bronze)', gold:'#D9AE55', cocoa:'#2E2119', ivory:'#EFE9E4'
+}}}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/dist/umd/supabase.js"></script>
+<style>
+:root{
+  color-scheme:light;
+  --page:#FAF6F1; --card:#FFFFFF; --ink:#3A2A1F; --mute:#76624F; --line:#E8DDD0; --sand:#F3EBE1;
+  --bronze:#8A5F20; --gold-soft:#F6E9C8;
+  --red-bg:#FBE9E6; --red-fg:#9B2F25; --red:#C4473B;
+  --amb-bg:#FCF1D6; --amb-fg:#744E00; --amb:#D9A021;
+  --grn-bg:#E6F1E3; --grn-fg:#2C5A28; --grn:#5C9156;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --page:#1C1410; --card:#271C16; --ink:#F1E9E1; --mute:#B9A794; --line:#40322A; --sand:#32261F;
+    --bronze:#E3BE72; --gold-soft:#3B2E1B;
+    --red-bg:#3D1F1B; --red-fg:#F2B3AB; --red:#D8685B;
+    --amb-bg:#3A2D12; --amb-fg:#F0CC7A; --amb:#E0A92E;
+    --grn-bg:#1F3320; --grn-fg:#A9D4A3; --grn:#6DAA67;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:#1C1410; --card:#271C16; --ink:#F1E9E1; --mute:#B9A794; --line:#40322A; --sand:#32261F;
+  --bronze:#E3BE72; --gold-soft:#3B2E1B;
+  --red-bg:#3D1F1B; --red-fg:#F2B3AB; --red:#D8685B;
+  --amb-bg:#3A2D12; --amb-fg:#F0CC7A; --amb:#E0A92E;
+  --grn-bg:#1F3320; --grn-fg:#A9D4A3; --grn:#6DAA67;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%}
+body{margin:0; min-height:100%; background:var(--page); color:var(--ink); font-family:'Mulish',system-ui,-apple-system,'Segoe UI',sans-serif; -webkit-font-smoothing:antialiased}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); background:#2E2119; z-index:10}
+.serif{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-variant-numeric:lining-nums tabular-nums}
+.nums{font-variant-numeric:tabular-nums lining-nums}
+.card{background:var(--card); border:1px solid var(--line); border-radius:20px}
+.inp{width:100%; background:var(--page); color:var(--ink); border:1.5px solid var(--line); border-radius:12px; padding:.65rem .8rem; font:inherit; font-size:16px; min-height:46px}
+.inp:focus{outline:3px solid #D9AE5588; border-color:#C99644}
+select.inp{appearance:auto}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:46px; padding:.6rem 1.1rem; border-radius:14px; font-weight:800; font-size:.95rem; border:0; cursor:pointer; transition:transform .12s, filter .12s}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible,.tabbtn:focus-visible,.iconbtn:focus-visible{outline:3px solid #D9AE55; outline-offset:2px}
+.btn-gold{background:linear-gradient(180deg,#E9C770,#C99644); color:#2E2119}
+.btn-gold:hover{filter:brightness(1.05)}
+.btn-ghost{background:transparent; color:var(--ink); border:1.5px solid var(--line)}
+.btn-ghost:hover{background:var(--sand)}
+.btn-dark{background:#2E2119; color:#EFE9E4}
+.btn-danger{background:transparent; color:var(--red-fg); border:1.5px solid var(--red-bg)}
+.btn-danger:hover{background:var(--red-bg)}
+.btn[disabled]{opacity:.45; cursor:not-allowed}
+.iconbtn{display:inline-grid; place-items:center; width:40px; height:40px; border-radius:12px; border:1.5px solid var(--line); background:transparent; color:var(--ink); cursor:pointer}
+.chip{display:inline-flex; align-items:center; gap:.3rem; font-size:.75rem; font-weight:700; padding:.2rem .6rem; border-radius:999px}
+.tone-red{background:var(--red-bg); color:var(--red-fg)}
+.tone-amb{background:var(--amb-bg); color:var(--amb-fg)}
+.tone-grn{background:var(--grn-bg); color:var(--grn-fg)}
+.tone-gold{background:var(--gold-soft); color:var(--bronze)}
+.goldline{background:linear-gradient(90deg,#E9C770,#B8863B)}
+@keyframes rise{from{transform:translateY(-10px); opacity:0}to{transform:none; opacity:1}}
+.toast{animation:rise .25s ease-out}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite}
+@media (prefers-reduced-motion: reduce){.toast{animation:none} .spin{animation:none} .btn{transition:none}}
+.bar{transition:width .5s ease, left .5s ease}
+@media (prefers-reduced-motion: reduce){.bar{transition:none}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* =====================================================================
+   CONFIGURAÇÃO DO SUPABASE  —  preencha estas duas linhas
+   (Supabase > Project Settings > API Keys / Data API)
+   ===================================================================== */
+const SUPABASE_URL = 'https://kmiubhyhvsrgldcjytps.supabase.co';          // ex.: https://abcdefgh.supabase.co
+const SUPABASE_KEY = 'sb_publishable_BqI74iAiaMfDabxSl5po6Q_oL-feEkH';       // começa com sb_publishable_  (ou a chave "anon")
+/* ===================================================================== */
+
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+const CONFIGURED = /^https:\/\/.+\.supabase\.co/.test(SUPABASE_URL) && SUPABASE_KEY.length > 20 && !SUPABASE_KEY.startsWith('COLE_');
+const db = CONFIGURED ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+/* ---------- utilidades ---------- */
+const brl = v => (Number.isFinite(v) ? v : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const num = (v, d = 0) => (Number.isFinite(v) ? v : 0).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const n = v => { const x = parseFloat(String(v ?? '').replace(',', '.')); return Number.isFinite(x) ? x : 0; };
+const str = v => (v === null || v === undefined || v === 0 ? '' : String(+Number(v).toFixed(4)));
+const uid = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+const MEI_LIMIT = 81000; // teto anual do MEI — altere aqui se a lei mudar
+const NOW = new Date();
+const MONTH_LABEL = NOW.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+const YEAR_START = new Date(NOW.getFullYear(), 0, 1).toISOString();
+const fixNums = (row, keys) => { const r = { ...row }; keys.forEach(k => { if (r[k] !== null && r[k] !== undefined) r[k] = Number(r[k]); }); return r; };
+const fixStock = r => fixNums(r, ['w', 'l', 'price', 'area', 'cost', 'qty', 'min']);
+const fixSale = r => fixNums(r, ['price', 'cogs', 'ship']);
+const fixRecipe = r => fixNums(r, ['minutes', 'shipping', 'price']);
+const DEFAULT_CFG = { salary: '0', hours: '160', fixed: '0', das: '0', fee: '0', target: '15', yearBase: '0' };
+const cfgFromRow = r => ({ salary: str(r.salary) || '0', hours: str(r.hours) || '160', fixed: str(r.fixed) || '0', das: str(r.das) || '0', fee: str(r.fee) || '0', target: str(r.target) || '0', yearBase: str(r.year_base) || '0' });
+const EMPTY_DRAFT = { recipeId: null, name: '', lines: [], minutes: '', shipOn: false, shipping: '', price: '' };
+
+/* ---------- ícones ---------- */
+const ICONS = {
+  home: ['M3 10.5 12 3l9 7.5', 'M5 9.5V20h5v-6h4v6h5V9.5'],
+  box: ['M21 8l-9-5-9 5v8l9 5 9-5z', 'M3 8l9 5 9-5', 'M12 13v8'],
+  calc: ['M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z', 'M8 7h8', 'M8 12h.01', 'M12 12h.01', 'M16 12h.01', 'M8 16h.01', 'M12 16h.01', 'M16 16h.01'],
+  chart: ['M3 3v18h18', 'M7 15l4-5 3 3 5-7'],
+  plus: ['M12 5v14', 'M5 12h14'],
+  trash: ['M4 7h16', 'M10 11v6', 'M14 11v6', 'M6 7l1 13h10l1-13', 'M9 7V4h6v3'],
+  edit: ['M12 20h9', 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'],
+  logout: ['M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4', 'M16 17l5-5-5-5', 'M21 12H9'],
+  alert: ['M12 3 2 20h20z', 'M12 10v4', 'M12 17h.01'],
+  check: ['M5 12.5l4.5 4.5L19 7.5'],
+  x: ['M6 6l12 12', 'M18 6L6 18'],
+  info: ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z', 'M12 11v5', 'M12 8h.01'],
+  scissors: ['M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M8.1 7.9 20 18', 'M14.5 9.5 20 4', 'M8.1 16.1 12 12'],
+  bag: ['M5 8h14l1 13H4z', 'M9 8V6a3 3 0 0 1 6 0v2'],
+  tag: ['M3 12V4h8l10 10-8 8z', 'M7.5 8.5h.01'],
+  save: ['M5 3h11l3 3v15H5z', 'M8 3v6h7V3', 'M8 21v-7h8v7'],
+  loader: ['M12 3a9 9 0 1 0 9 9']
+};
+const Icon = ({ name, size = 20, className = '' }) => html`
+  <svg width=${size} height=${size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className=${className} aria-hidden="true">
+    ${(ICONS[name] || []).map((d, i) => html`<path key=${i} d=${d} />`)}
+  </svg>`;
+
+const Butterfly = ({ size = 40 }) => html`
+  <svg width=${size} height=${size} viewBox="0 0 64 64" fill="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#E9C770" /><stop offset="1" stopColor="#B8863B" />
+      </linearGradient>
+    </defs>
+    <g stroke="url(#gold)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M31 40 C31 25 24 15 14 13 C5 12 3 23 11 32 C16 38 22 42 26 42 C29 42 29.5 38 27.5 36.5 C25 35 21 36.5 19 36" />
+      <path d="M33 40 C33 25 40 15 50 13 C59 12 61 23 53 32 C48 38 42 42 38 42 C35 42 34.5 38 36.5 36.5 C39 35 43 36.5 45 36" />
+      <path d="M16 38 C9 44 9 53 15 55 C20 56 25 52 28 49 C30 47 32 49 32 52 L32 54" />
+      <path d="M48 38 C55 44 55 53 49 55 C44 56 39 52 36 49 C34 47 32 49 32 52" />
+    </g>
+  </svg>`;
+
+/* ---------- cálculos ---------- */
+const costPerCm2 = it => it.price / (it.w * it.l);
+const lineCost = (l, stock) => {
+  const it = stock.find(s => s.id === l.itemId);
+  if (!it) return 0;
+  if (it.kind === 'fabric') return n(l.w) * n(l.h) * costPerCm2(it);
+  return n(l.qty) * it.cost;
+};
+const computeDre = (month, cfg) => {
+  const rev = month.revenue, cogs = month.cogs;
+  const ship = month.ship || 0;
+  const card = (rev + ship) * n(cfg.fee) / 100;
+  const fees = card + ship;
+  const contrib = rev - cogs - fees;
+  const salary = n(cfg.salary), other = n(cfg.fixed), das = n(cfg.das);
+  const fixed = salary + other + das;
+  return { rev, cogs, fees, card, ship, contrib, salary, other, das, fixed, profit: contrib - fixed };
+};
+
+/* ---------- peças de interface ---------- */
+const Field = ({ label, hint, children }) => html`
+  <label className="block">
+    <span className="block text-sm font-bold mb-1">${label}</span>
+    ${children}
+    ${hint && html`<span className="block text-xs text-mute mt-1">${hint}</span>`}
+  </label>`;
+
+const Num = ({ value, onChange, prefix, suffix, step = 'any', placeholder, min = 0 }) => html`
+  <div className="relative">
+    ${prefix && html`<span className="absolute left-3 top-1/2 -translate-y-1/2 text-mute text-sm font-semibold pointer-events-none">${prefix}</span>`}
+    <input className="inp nums" type="number" inputMode="decimal" min=${min} step=${step} value=${value} placeholder=${placeholder}
+      style=${{ paddingLeft: prefix ? '2.4rem' : undefined, paddingRight: suffix ? '3.4rem' : undefined }}
+      onChange=${e => onChange(e.target.value)} />
+    ${suffix && html`<span className="absolute right-3 top-1/2 -translate-y-1/2 text-mute text-sm font-semibold pointer-events-none">${suffix}</span>`}
+  </div>`;
+
+const Section = ({ title, sub, children, right }) => html`
+  <section className="card p-4 sm:p-5">
+    <div className="flex items-start justify-between gap-3 mb-3">
+      <div>
+        <h2 className="serif text-2xl font-bold leading-tight">${title}</h2>
+        ${sub && html`<p className="text-sm text-mute mt-0.5 max-w-prose">${sub}</p>`}
+      </div>
+      ${right}
+    </div>
+    ${children}
+  </section>`;
+
+const Empty = ({ icon, title, text, children }) => html`
+  <div className="rounded-2xl p-6 text-center" style=${{ background: 'var(--sand)' }}>
+    <div className="mx-auto w-11 h-11 rounded-full grid place-items-center mb-2" style=${{ background: 'var(--gold-soft)', color: 'var(--bronze)' }}><${Icon} name=${icon} /></div>
+    <p className="font-extrabold">${title}</p>
+    <p className="text-sm text-mute mt-1 max-w-sm mx-auto">${text}</p>
+    ${children && html`<div className="mt-3">${children}</div>`}
+  </div>`;
+
+/* ---------- telas de entrada ---------- */
+function Shell({ children }) {
+  return html`
+  <div className="min-h-screen flex flex-col">
+    <header style=${{ background: '#2E2119' }}>
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+        <${Butterfly} size=${44} />
+        <div className="leading-none">
+          <p className="serif text-xl sm:text-2xl font-semibold tracking-wide" style=${{ color: '#EFE9E4' }}>MARIE FARFALLA</p>
+          <p className="text-xs mt-1" style=${{ color: '#D9AE55' }}>Gestão do ateliê</p>
+        </div>
+      </div>
+    </header>
+    <main className="flex-1 grid place-items-center px-4 py-8">${children}</main>
+  </div>`;
+}
+
+function Setup() {
+  return html`<${Shell}>
+    <div className="card p-5 max-w-xl w-full">
+      <h1 className="serif text-3xl font-bold">Falta conectar o banco</h1>
+      <p className="text-mute mt-1">Abra o arquivo <b>index.html</b> em um editor de texto e preencha as duas linhas no começo do código:</p>
+      <pre className="rounded-xl p-3 mt-3 text-xs overflow-x-auto" style=${{ background: 'var(--sand)' }}>const SUPABASE_URL = 'https://xxxx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_...';</pre>
+      <p className="text-sm text-mute mt-3">Siga o passo a passo do arquivo <b>GUIA.md</b> para encontrar esses dois valores no Supabase.</p>
+    </div>
+  <//>`;
+}
+
+function Login() {
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const submit = async e => {
+    e.preventDefault();
+    setBusy(true); setErr('');
+    const { error } = await db.auth.signInWithPassword({ email: email.trim(), password: pass });
+    if (error) setErr(/invalid/i.test(error.message) ? 'E-mail ou senha incorretos.' : 'Não foi possível entrar: ' + error.message);
+    setBusy(false);
+  };
+  return html`<${Shell}>
+    <form className="card p-5 max-w-sm w-full" onSubmit=${submit}>
+      <h1 className="serif text-3xl font-bold">Entrar</h1>
+      <p className="text-mute text-sm mt-1">Use o e-mail e a senha cadastrados para você.</p>
+      <div className="space-y-3 mt-4">
+        <${Field} label="E-mail"><input className="inp" type="email" autoComplete="username" required value=${email} onChange=${e => setEmail(e.target.value)} /><//>
+        <${Field} label="Senha"><input className="inp" type="password" autoComplete="current-password" required value=${pass} onChange=${e => setPass(e.target.value)} /><//>
+      </div>
+      ${err && html`<p className="tone-red rounded-xl p-3 mt-3 text-sm font-bold" role="alert">${err}</p>`}
+      <button className="btn btn-gold w-full mt-4" disabled=${busy}>${busy ? 'Entrando…' : 'Entrar'}</button>
+    </form>
+  <//>`;
+}
+
+/* ---------- INÍCIO ---------- */
+function Home({ month, monthSales, annual, cfg, setCfg, cfgState, stock, onDelSale, go }) {
+  const d = computeDre(month, cfg);
+  const p = annual / MEI_LIMIT;
+  const tone = p >= 0.9 ? 'red' : p >= 0.7 ? 'amb' : 'grn';
+  const color = { red: 'var(--red)', amb: 'var(--amb)', grn: 'var(--grn)' }[tone];
+  const elapsed = NOW.getMonth() + 1;
+  const monthsLeft = annual > 0 ? Math.max(0, (MEI_LIMIT - annual) / (annual / elapsed)) : null;
+  const low = stock.filter(s => (s.kind === 'fabric' ? s.area < s.min : s.qty < s.min));
+  const msg = {
+    grn: 'Tudo certo. Você está bem abaixo do teto do MEI.',
+    amb: 'Atenção: você já passou de 70% do teto. Vale planejar as próximas vendas.',
+    red: 'Cuidado: o teto está muito perto. Fale com seu contador antes de continuar vendendo.'
+  }[tone];
+  return html`
+  <div className="space-y-4">
+    <div>
+      <h1 className="serif text-3xl sm:text-4xl font-bold">Seu mês em um olhar</h1>
+      <p className="text-mute">${MONTH_LABEL}</p>
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="card p-4">
+        <p className="text-sm font-bold text-mute">Faturamento do mês</p>
+        <p className="serif text-4xl font-bold mt-1">${brl(d.rev)}</p>
+        <p className="text-xs text-mute mt-1">Tudo o que você vendeu</p>
+      </div>
+      <div className="card p-4">
+        <p className="text-sm font-bold text-mute">Lucro real</p>
+        <p className="serif text-4xl font-bold mt-1" style=${{ color: d.rev === 0 ? undefined : d.profit >= 0 ? 'var(--grn)' : 'var(--red)' }}>${brl(d.profit)}</p>
+        <p className="text-xs text-mute mt-1">${d.rev === 0 ? 'Aparece depois da primeira venda' : d.profit >= 0 ? 'Depois de pagar tudo, inclusive seu salário' : 'O mês está no prejuízo'}</p>
+      </div>
+      <div className="card p-4">
+        <p className="text-sm font-bold text-mute">Bolsas vendidas</p>
+        <p className="serif text-4xl font-bold mt-1">${month.bags}</p>
+        <p className="text-xs text-mute mt-1">${month.bags ? `Média de ${brl(d.rev / month.bags)} por bolsa` : 'Nenhuma venda ainda'}</p>
+      </div>
+    </div>
+
+    <${Section} title="Teto do MEI" sub="Quanto você já faturou no ano em relação ao limite legal."
+      right=${html`<span className=${`chip tone-${tone}`}>${num(p * 100, 1)}% usado</span>`}>
+      <div className="flex items-end justify-between gap-2 mb-2 flex-wrap">
+        <p className="serif text-3xl font-bold">${brl(annual)}</p>
+        <p className="text-sm text-mute">limite de ${brl(MEI_LIMIT)} por ano</p>
+      </div>
+      <div className="relative h-5 rounded-full overflow-hidden" style=${{ background: 'var(--sand)' }} role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow=${Math.round(p * 100)} aria-label="Faturamento acumulado no ano">
+        <div className="bar h-full rounded-full" style=${{ width: Math.min(100, p * 100) + '%', background: color }}></div>
+        <div className="absolute top-0 bottom-0 w-0.5" style=${{ left: '70%', background: 'var(--card)' }}></div>
+        <div className="absolute top-0 bottom-0 w-0.5" style=${{ left: '90%', background: 'var(--card)' }}></div>
+      </div>
+      <div className="relative h-4 text-[11px] text-mute mt-1">
+        <span className="absolute" style=${{ left: '70%', transform: 'translateX(-50%)' }}>70%</span>
+        <span className="absolute" style=${{ left: '90%', transform: 'translateX(-50%)' }}>90%</span>
+      </div>
+      <div className=${`tone-${tone} rounded-xl p-3 mt-2 flex gap-2 items-start text-sm font-semibold`}>
+        <${Icon} name=${tone === 'grn' ? 'check' : 'alert'} size=${18} className="mt-0.5 shrink-0" />
+        <div>
+          <p>${msg}</p>
+          <p className="font-medium mt-1">Faltam ${brl(Math.max(0, MEI_LIMIT - annual))}.${monthsLeft !== null ? ` No ritmo atual, o teto chega em cerca de ${num(monthsLeft, 1)} meses.` : ''}</p>
+        </div>
+      </div>
+      <div className="mt-3 max-w-sm">
+        <${Field} label="Faturamento do ano antes de usar o sistema" hint="Some o que você vendeu de janeiro até começar a lançar vendas aqui. Salva sozinho.">
+          <${Num} value=${cfg.yearBase} onChange=${v => setCfg({ ...cfg, yearBase: v })} prefix="R$" />
+        <//>
+        ${cfgState && html`<p className="text-xs text-mute mt-1">${cfgState === 'saving' ? 'Salvando…' : cfgState === 'saved' ? 'Salvo.' : 'Erro ao salvar.'}</p>`}
+      </div>
+    <//>
+
+    <div className="grid gap-4 md:grid-cols-2">
+      <${Section} title="Materiais acabando" sub=${low.length ? 'Estes itens estão abaixo do mínimo que você definiu.' : stock.length ? 'Nada abaixo do mínimo.' : 'Cadastre seus materiais no estoque.'}>
+        ${low.length === 0 && html`<p className="text-sm text-mute">${stock.length ? 'Seu estoque está em dia.' : 'O estoque ainda está vazio.'}</p>`}
+        <ul className="space-y-2">
+          ${low.map(s => html`
+            <li key=${s.id} className="flex items-center justify-between gap-2 text-sm">
+              <span className="font-semibold">${s.name}</span>
+              <span className="chip tone-amb">${s.kind === 'fabric' ? num(s.area / (s.w * s.l), 1) + ' rolos' : s.qty + ' ' + s.unit}</span>
+            </li>`)}
+        </ul>
+        <button className="btn btn-ghost mt-3" onClick=${() => go('stock')}>Abrir estoque</button>
+      <//>
+      <${Section} title="Vendas do mês" sub="Lançadas na aba “Custo da bolsa”. Lançou errado? Exclua aqui.">
+        ${monthSales.length === 0 && html`<p className="text-sm text-mute">Nenhuma venda neste mês. Calcule uma bolsa e toque em “Registrar venda”.</p>`}
+        <ul className="space-y-1">
+          ${monthSales.slice(0, 8).map(s => html`
+            <li key=${s.id} className="flex items-center justify-between gap-2 text-sm py-1">
+              <span className="min-w-0"><span className="font-semibold block truncate">${s.name}</span><span className="text-xs text-mute">${new Date(s.sold_at).toLocaleDateString('pt-BR')}</span></span>
+              <span className="flex items-center gap-2 shrink-0"><span className="nums font-bold">${brl(s.price)}</span>
+                <button className="iconbtn" style=${{ width: 34, height: 34 }} aria-label="Excluir venda" onClick=${() => onDelSale(s)}><${Icon} name="trash" size=${16} /></button></span>
+            </li>`)}
+        </ul>
+        <button className="btn btn-ghost mt-3" onClick=${() => go('cost')}>Calcular uma bolsa</button>
+      <//>
+    </div>
+  </div>`;
+}
+
+/* ---------- ESTOQUE ---------- */
+function ItemModal({ item, onClose, onSave }) {
+  const editing = !!item;
+  const [kind, setKind] = useState(item ? item.kind : 'fabric');
+  const [busy, setBusy] = useState(false);
+  const [f, setF] = useState(() => {
+    if (!item) return { name: '', w: '140', l: '100', price: '', qty: '1', unit: 'un', cost: '', min: '' };
+    if (item.kind === 'fabric') { const r = item.w * item.l; return { name: item.name, w: str(item.w), l: str(item.l), price: str(item.price), qty: str(item.area / r) || '0', unit: 'un', cost: '', min: str(item.min / r) }; }
+    return { name: item.name, w: '140', l: '100', price: '', qty: str(item.qty) || '0', unit: item.unit || 'un', cost: str(item.cost), min: str(item.min) };
+  });
+  const set = o => setF(p => ({ ...p, ...o }));
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  const fabric = kind === 'fabric';
+  const valid = f.name.trim() && (fabric ? n(f.w) > 0 && n(f.l) > 0 && n(f.price) > 0 : n(f.cost) > 0);
+  const roll = n(f.w) * n(f.l);
+  const save = async () => {
+    setBusy(true);
+    const row = fabric
+      ? { name: f.name.trim(), kind: 'fabric', w: n(f.w), l: n(f.l), price: n(f.price), area: n(f.qty) * roll, min: (f.min === '' ? 1 : n(f.min)) * roll, unit: null, cost: null, qty: null }
+      : { name: f.name.trim(), kind: 'unit', unit: f.unit, cost: n(f.cost), qty: n(f.qty), min: n(f.min), w: null, l: null, price: null, area: null };
+    const ok = await onSave(row);
+    if (!ok) setBusy(false);
+  };
+  return html`
+  <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style=${{ background: 'rgba(28,20,16,.6)' }} onClick=${onClose}>
+    <div role="dialog" aria-modal="true" aria-label=${editing ? 'Editar material' : 'Cadastrar material'} className="card w-full sm:max-w-lg max-h-[92vh] overflow-y-auto p-4 sm:p-5 rounded-b-none sm:rounded-b-[20px]" onClick=${e => e.stopPropagation()}>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="serif text-2xl font-bold">${editing ? 'Editar material' : 'Cadastrar material'}</h2>
+        <button className="iconbtn" onClick=${onClose} aria-label="Fechar"><${Icon} name="x" /></button>
+      </div>
+      <div className="flex gap-2 mb-3">
+        <button className=${'btn flex-1 ' + (fabric ? 'btn-dark' : 'btn-ghost')} disabled=${editing} onClick=${() => setKind('fabric')}><${Icon} name="scissors" size=${18} />Tecido em rolo</button>
+        <button className=${'btn flex-1 ' + (!fabric ? 'btn-dark' : 'btn-ghost')} disabled=${editing} onClick=${() => setKind('unit')}><${Icon} name="box" size=${18} />Peça por unidade</button>
+      </div>
+      <p className="text-sm text-mute mb-3">${fabric ? 'Para materiais que você corta em centímetros, como sintético e forro.' : 'Para zíperes, alças, ferragens e tudo que se conta por quantidade.'}</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <${Field} label="Nome do material"><input className="inp" value=${f.name} onChange=${e => set({ name: e.target.value })} placeholder=${fabric ? 'Ex.: Sintético Prada Rosé' : 'Ex.: Fecho magnético'} autoFocus /><//>
+        </div>
+        ${fabric ? html`
+          <${Field} label="Largura do rolo"><${Num} value=${f.w} onChange=${v => set({ w: v })} suffix="cm" /><//>
+          <${Field} label="Comprimento do rolo"><${Num} value=${f.l} onChange=${v => set({ l: v })} suffix="cm" /><//>
+          <${Field} label="Preço de um rolo"><${Num} value=${f.price} onChange=${v => set({ price: v })} prefix="R$" placeholder="0,00" /><//>
+          <${Field} label="Rolos que você tem agora" hint="Pode ser fracionado, como 1,5."><${Num} value=${f.qty} onChange=${v => set({ qty: v })} /><//>
+          <${Field} label="Avisar quando restar menos de" hint="Em rolos. Se deixar vazio, avisa com menos de 1."><${Num} value=${f.min} onChange=${v => set({ min: v })} suffix="rolos" placeholder="1" /><//>
+        ` : html`
+          <${Field} label="Unidade">
+            <select className="inp" value=${f.unit} onChange=${e => set({ unit: e.target.value })}>
+              ${['un', 'jogo', 'par', 'metro', 'pacote', 'caixa'].map(u => html`<option key=${u} value=${u}>${u}</option>`)}
+            </select>
+          <//>
+          <${Field} label=${'Custo por ' + f.unit}><${Num} value=${f.cost} onChange=${v => set({ cost: v })} prefix="R$" placeholder="0,00" /><//>
+          <${Field} label="Quantidade que você tem agora"><${Num} value=${f.qty} onChange=${v => set({ qty: v })} suffix=${f.unit} /><//>
+          <${Field} label="Avisar quando restar menos de"><${Num} value=${f.min} onChange=${v => set({ min: v })} suffix=${f.unit} placeholder="0" /><//>
+        `}
+      </div>
+      ${fabric && roll > 0 && n(f.price) > 0 && html`
+        <div className="rounded-xl p-3 mt-3 text-sm font-semibold" style=${{ background: 'var(--gold-soft)', color: 'var(--bronze)' }}>
+          Cada 100 cm² vai custar ${brl(n(f.price) / roll * 100)}. Um corte de 30 × 40 cm sai por ${brl(n(f.price) / roll * 1200)}.
+        </div>`}
+      <div className="flex gap-2 mt-4">
+        <button className="btn btn-ghost flex-1" onClick=${onClose}>Cancelar</button>
+        <button className="btn btn-gold flex-1" disabled=${!valid || busy} onClick=${save}><${Icon} name="check" size=${18} />${busy ? 'Salvando…' : editing ? 'Salvar alterações' : 'Cadastrar'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function CutSimulator({ stock, onUse }) {
+  const fabrics = stock.filter(s => s.kind === 'fabric');
+  const [id, setId] = useState('');
+  const [w, setW] = useState('30');
+  const [h, setH] = useState('40');
+  if (fabrics.length === 0) return null;
+  const it = fabrics.find(f => f.id === id) || fabrics[0];
+  const area = n(w) * n(h);
+  const cost = area * costPerCm2(it);
+  const enough = area > 0 && area <= it.area;
+  return html`
+  <${Section} title="Quanto custa um corte?" sub="Informe o tamanho do pedaço em centímetros. O sistema calcula o custo exato e desconta do rolo.">
+    <div className="grid gap-3 sm:grid-cols-3">
+      <div className="sm:col-span-3">
+        <${Field} label="Material">
+          <select className="inp" value=${it.id} onChange=${e => setId(e.target.value)}>
+            ${fabrics.map(f => html`<option key=${f.id} value=${f.id}>${f.name} — rolo de ${num(f.w / 100, 2)} m × ${num(f.l / 100, 2)} m a ${brl(f.price)}</option>`)}
+          </select>
+        <//>
+      </div>
+      <${Field} label="Largura do corte"><${Num} value=${w} onChange=${setW} suffix="cm" /><//>
+      <${Field} label="Altura do corte"><${Num} value=${h} onChange=${setH} suffix="cm" /><//>
+      <div className="rounded-xl p-3 flex flex-col justify-center" style=${{ background: 'var(--gold-soft)' }}>
+        <span className="text-xs font-bold text-bronze">Custo deste corte</span>
+        <span className="serif text-3xl font-bold text-bronze">${brl(cost)}</span>
+      </div>
+    </div>
+    <p className="text-sm text-mute mt-3">
+      Área de ${num(area)} cm² = ${num(area / (it.w * it.l) * 100, 1)}% de um rolo. Cada 100 cm² custa ${brl(costPerCm2(it) * 100)}.
+    </p>
+    ${!enough && area > 0 && html`<p className="text-sm font-bold mt-1" style=${{ color: 'var(--red-fg)' }}>Não há material suficiente no estoque para este corte.</p>`}
+    <button className="btn btn-dark mt-3" disabled=${!enough} onClick=${() => onUse(it, area, cost)}><${Icon} name="scissors" size=${18} />Dar baixa deste corte no estoque</button>
+  <//>`;
+}
+
+function Stock({ stock, onAdd, onEdit, onDelete, onCut }) {
+  const [modal, setModal] = useState(null); // null | 'new' | item
+  const value = stock.reduce((s, i) => s + (i.kind === 'fabric' ? i.area * costPerCm2(i) : i.qty * i.cost), 0);
+  const low = stock.filter(s => (s.kind === 'fabric' ? s.area < s.min : s.qty < s.min)).length;
+  return html`
+  <div className="space-y-4">
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <h1 className="serif text-3xl sm:text-4xl font-bold">Estoque</h1>
+        <p className="text-mute">${stock.length} materiais · ${brl(value)} guardados${stock.length ? ' · ' + (low ? low + ' abaixo do mínimo' : 'tudo acima do mínimo') : ''}</p>
+      </div>
+      <button className="btn btn-gold" onClick=${() => setModal('new')}><${Icon} name="plus" size=${18} />Cadastrar material</button>
+    </div>
+
+    ${stock.length === 0 && html`
+      <${Empty} icon="box" title="Seu estoque está vazio" text="Cadastre o primeiro material: um rolo de sintético, zíperes, alças. Depois é só usar nas fichas das bolsas.">
+        <button className="btn btn-gold" onClick=${() => setModal('new')}><${Icon} name="plus" size=${18} />Cadastrar material</button>
+      <//>`}
+
+    <${CutSimulator} stock=${stock} onUse=${onCut} />
+
+    <div className="grid gap-3 md:grid-cols-2">
+      ${stock.map(s => {
+        const fabric = s.kind === 'fabric';
+        const amount = fabric ? s.area : s.qty;
+        const isLow = amount < s.min;
+        const fill = s.min > 0 ? Math.min(100, amount / (s.min * 3) * 100) : (amount > 0 ? 100 : 0);
+        return html`
+        <article key=${s.id} className="card p-4">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-extrabold leading-snug">${s.name}</h3>
+            <span className=${'chip shrink-0 ' + (isLow ? 'tone-amb' : 'tone-grn')}>${isLow ? 'Repor em breve' : 'Em dia'}</span>
+          </div>
+          <p className="serif text-3xl font-bold mt-1">
+            ${fabric ? num(s.area / (s.w * s.l), 2) + ' rolos' : num(s.qty, 2) + ' ' + s.unit}
+          </p>
+          <p className="text-sm text-mute">
+            ${fabric
+              ? `≈ ${num(s.area / s.w / 100, 2)} m de comprimento · rolo de ${num(s.w / 100, 2)} × ${num(s.l / 100, 2)} m a ${brl(s.price)}`
+              : `${brl(s.cost)} por ${s.unit}`}
+          </p>
+          <div className="h-2 rounded-full mt-3 overflow-hidden" style=${{ background: 'var(--sand)' }}>
+            <div className="bar h-full goldline rounded-full" style=${{ width: fill + '%' }}></div>
+          </div>
+          ${fabric && html`<p className="text-xs text-mute mt-2">Cada 100 cm² custa ${brl(costPerCm2(s) * 100)}</p>`}
+          <div className="flex gap-2 mt-3">
+            <button className="btn btn-ghost flex-1" style=${{ minHeight: 40 }} onClick=${() => setModal(s)}><${Icon} name="edit" size=${16} />Editar</button>
+            <button className="btn btn-danger" style=${{ minHeight: 40 }} onClick=${() => onDelete(s)} aria-label=${'Excluir ' + s.name}><${Icon} name="trash" size=${16} />Excluir</button>
+          </div>
+        </article>`;
+      })}
+    </div>
+    ${modal && html`<${ItemModal} item=${modal === 'new' ? null : modal} onClose=${() => setModal(null)}
+      onSave=${async row => { const ok = modal === 'new' ? await onAdd(row) : await onEdit(modal.id, row); if (ok) setModal(null); return ok; }} />`}
+  </div>`;
+}
+
+/* ---------- CUSTO DA BOLSA ---------- */
+function Cost({ stock, cfg, setCfg, cfgState, draft, setDraft, recipes, onSaveRecipe, onDelRecipe, onProduce, onSale, go }) {
+  const patch = o => setDraft(d => ({ ...d, ...o }));
+  const setLine = (id, o) => patch({ lines: draft.lines.map(l => l.id === id ? { ...l, ...o } : l) });
+  const addLine = () => patch({ lines: [...draft.lines, { id: uid(), itemId: stock[0].id, w: '30', h: '40', qty: '1' }] });
+  const delLine = id => patch({ lines: draft.lines.filter(l => l.id !== id) });
+  const openRecipe = r => setDraft({ recipeId: r.id, name: r.name, lines: r.lines || [], minutes: str(r.minutes), shipOn: !!r.ship_on, shipping: str(r.shipping), price: str(r.price) });
+
+  const hrs = Math.max(1, n(cfg.hours));
+  const perMinLabor = n(cfg.salary) / (hrs * 60);
+  const perMinFixed = (n(cfg.fixed) + n(cfg.das)) / (hrs * 60);
+  const mins = n(draft.minutes);
+  const mat = draft.lines.reduce((s, l) => s + lineCost(l, stock), 0);
+  const labor = perMinLabor * mins;
+  const fixed = perMinFixed * mins;
+  const ship = draft.shipOn ? n(draft.shipping) : 0;
+  const base = mat + labor + fixed + ship;
+  const fee = n(cfg.fee) / 100, target = n(cfg.target) / 100;
+  const price = n(draft.price);
+  const feeV = (price + ship) * fee;
+  const net = price - feeV - base;
+  const margin = price > 0 ? net / price : 0;
+  const breakEven = (base + fee * ship) / (1 - fee);
+  const suggested = (base + fee * ship) / Math.max(0.05, 1 - fee - target);
+  let state = 'none';
+  if (price > 0) state = net < 0 ? 'red' : margin < target ? 'amb' : 'grn';
+  const info = {
+    none: { icon: 'tag', title: 'Digite o preço de venda', text: 'Assim que você digitar, o painel mostra se a bolsa dá lucro.' },
+    red: { icon: 'alert', title: 'Prejuízo', text: `Você perde ${brl(-net)} a cada bolsa vendida por este preço.` + (price - feeV < mat ? ' O preço nem paga o material e a taxa.' : '') },
+    amb: { icon: 'info', title: 'Ponto de equilíbrio', text: `Paga todos os custos e o seu trabalho, mas sobra só ${brl(net)} (${num(margin * 100, 1)}%). Falta margem para a empresa crescer.` },
+    grn: { icon: 'check', title: 'Lucro saudável', text: `Sobram ${brl(net)} (${num(margin * 100, 1)}%) depois de pagar tudo. Meta atingida.` }
+  }[state];
+  const tonedBg = { none: 'var(--sand)', red: 'var(--red-bg)', amb: 'var(--amb-bg)', grn: 'var(--grn-bg)' }[state];
+  const tonedFg = { none: 'var(--ink)', red: 'var(--red-fg)', amb: 'var(--amb-fg)', grn: 'var(--grn-fg)' }[state];
+  const dot = { none: 'var(--line)', red: 'var(--red)', amb: 'var(--amb)', grn: 'var(--grn)' };
+  const rows = [['Material', mat], ['Seu trabalho (' + num(mins) + ' min)', labor], ['Contas fixas (luz, internet, DAS)', fixed], ...(ship > 0 ? [['Frete de envio', ship]] : []), [ship > 0 ? 'Taxa da maquininha (inclui o frete)' : 'Taxa da maquininha', feeV]];
+  const editingRecipe = recipes.find(r => r.id === draft.recipeId);
+
+  return html`
+  <div className="space-y-4">
+    <div>
+      <h1 className="serif text-3xl sm:text-4xl font-bold">Custo da bolsa</h1>
+      <p className="text-mute">Siga os passos. O preço final aparece sozinho no painel ao lado.</p>
+    </div>
+
+    <${Section} title="Fichas salvas" sub="Guarde a ficha de cada modelo para abrir de novo quando o preço do material mudar.">
+      ${recipes.length === 0 ? html`<p className="text-sm text-mute">Você ainda não salvou nenhuma ficha. Monte uma bolsa abaixo e toque em “Salvar ficha”.</p>` : html`
+        <ul className="space-y-2">
+          ${recipes.map(r => html`
+            <li key=${r.id} className=${'flex items-center justify-between gap-2 rounded-xl p-2 pl-3 ' + (r.id === draft.recipeId ? 'tone-gold' : '')} style=${{ background: r.id === draft.recipeId ? undefined : 'var(--sand)' }}>
+              <span className="font-bold truncate">${r.name}</span>
+              <span className="flex gap-2 shrink-0">
+                <button className="btn btn-ghost" style=${{ minHeight: 38, padding: '.3rem .8rem' }} onClick=${() => openRecipe(r)}>Abrir</button>
+                <button className="iconbtn" aria-label=${'Excluir ficha ' + r.name} onClick=${() => onDelRecipe(r)}><${Icon} name="trash" size=${16} /></button>
+              </span>
+            </li>`)}
+        </ul>`}
+    <//>
+
+    <div className="grid gap-4 lg:grid-cols-5 items-start">
+      <div className="lg:col-span-3 space-y-4">
+        <${Section} title="1. Materiais da bolsa" sub="Escolha o material. Para tecido, digite o tamanho do corte em cm. Para peças, digite a quantidade."
+          right=${html`<span className="chip tone-gold nums">${brl(mat)}</span>`}>
+          <div className="space-y-3">
+            <${Field} label="Nome da bolsa"><input className="inp" value=${draft.name} onChange=${e => patch({ name: e.target.value })} placeholder="Ex.: Bolsa transversal" /><//>
+            ${stock.length === 0 && html`
+              <${Empty} icon="box" title="Cadastre materiais primeiro" text="Para montar a ficha, o estoque precisa ter pelo menos um material.">
+                <button className="btn btn-gold" onClick=${() => go('stock')}>Ir para o estoque</button>
+              <//>`}
+            ${draft.lines.map(l => {
+              const it = stock.find(s => s.id === l.itemId);
+              if (!it) return html`
+                <div key=${l.id} className="rounded-2xl p-3 flex items-center justify-between gap-2 tone-amb">
+                  <span className="text-sm font-bold">Este material foi excluído do estoque.</span>
+                  <button className="iconbtn shrink-0" onClick=${() => delLine(l.id)} aria-label="Remover linha"><${Icon} name="trash" size=${18} /></button>
+                </div>`;
+              return html`
+              <div key=${l.id} className="rounded-2xl p-3" style=${{ background: 'var(--sand)' }}>
+                <div className="flex gap-2 items-center">
+                  <select className="inp" aria-label="Material" value=${l.itemId} onChange=${e => setLine(l.id, { itemId: e.target.value })}>
+                    ${stock.map(s => html`<option key=${s.id} value=${s.id}>${s.name}</option>`)}
+                  </select>
+                  <button className="iconbtn shrink-0" onClick=${() => delLine(l.id)} aria-label="Remover material"><${Icon} name="trash" size=${18} /></button>
+                </div>
+                <div className="flex gap-2 items-center mt-2">
+                  ${it.kind === 'fabric' ? html`
+                    <div className="flex-1"><${Num} value=${l.w} onChange=${v => setLine(l.id, { w: v })} suffix="cm" /></div>
+                    <span className="text-mute font-bold">×</span>
+                    <div className="flex-1"><${Num} value=${l.h} onChange=${v => setLine(l.id, { h: v })} suffix="cm" /></div>
+                  ` : html`
+                    <div className="flex-1"><${Num} value=${l.qty} onChange=${v => setLine(l.id, { qty: v })} suffix=${it.unit} /></div>
+                  `}
+                  <span className="serif text-2xl font-bold min-w-[5.5rem] text-right">${brl(lineCost(l, stock))}</span>
+                </div>
+              </div>`;
+            })}
+            <button className="btn btn-ghost w-full" disabled=${stock.length === 0} onClick=${addLine}><${Icon} name="plus" size=${18} />Adicionar material</button>
+          </div>
+        <//>
+
+        <${Section} title="2. Seu tempo e suas contas" sub="Configure uma vez. O custo por minuto é calculado por trás. Tudo é salvo sozinho."
+          right=${html`<span className="chip tone-gold nums">${brl(labor + fixed)}</span>`}>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <${Field} label="Salário que você quer receber (mês)"><${Num} value=${cfg.salary} onChange=${v => setCfg({ ...cfg, salary: v })} prefix="R$" /><//>
+            <${Field} label="Horas que você trabalha no mês"><${Num} value=${cfg.hours} onChange=${v => setCfg({ ...cfg, hours: v })} suffix="h" /><//>
+            <${Field} label="Luz, internet e outras contas (mês)"><${Num} value=${cfg.fixed} onChange=${v => setCfg({ ...cfg, fixed: v })} prefix="R$" /><//>
+            <${Field} label="DAS-MEI (mês)" hint="Confira o valor no Portal do Empreendedor."><${Num} value=${cfg.das} onChange=${v => setCfg({ ...cfg, das: v })} prefix="R$" /><//>
+            <${Field} label="Taxa da maquininha"><${Num} value=${cfg.fee} onChange=${v => setCfg({ ...cfg, fee: v })} suffix="%" /><//>
+            <${Field} label="Lucro que você quer ter" hint="Parte do preço que deve sobrar."><${Num} value=${cfg.target} onChange=${v => setCfg({ ...cfg, target: v })} suffix="%" /><//>
+          </div>
+          <p className="text-sm text-mute mt-3">Seu minuto de trabalho vale ${brl(perMinLabor)} e as contas fixas custam ${brl(perMinFixed)} por minuto.
+            ${cfgState && html`<span className="font-bold"> ${cfgState === 'saving' ? 'Salvando…' : cfgState === 'saved' ? 'Salvo.' : 'Erro ao salvar.'}</span>`}</p>
+          <div className="mt-3 max-w-xs">
+            <${Field} label="Tempo para fazer esta bolsa"><${Num} value=${draft.minutes} onChange=${v => patch({ minutes: v })} suffix="min" /><//>
+          </div>
+        <//>
+      </div>
+
+      <div className="lg:col-span-2 space-y-4 lg:sticky lg:top-24">
+        <${Section} title="3. Preço de venda">
+          <div className="rounded-2xl p-3 mb-3" style=${{ background: 'var(--sand)' }}>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" checked=${draft.shipOn} onChange=${e => patch({ shipOn: e.target.checked })} style=${{ width: 22, height: 22, accentColor: '#C99644', marginTop: 2 }} />
+              <span>
+                <span className="block text-sm font-bold">Eu vou pagar o frete desta venda (opcional)</span>
+                <span className="block text-xs text-mute">Se o cliente paga o frete, deixe desmarcado.</span>
+              </span>
+            </label>
+            ${draft.shipOn && html`
+              <div className="mt-3">
+                <${Field} label="Valor do frete de envio" hint="Quanto você paga para enviar esta bolsa. Ele entra no custo, a taxa da maquininha também incide sobre ele, e o semáforo muda.">
+                  <${Num} value=${draft.shipping} onChange=${v => patch({ shipping: v })} prefix="R$" placeholder="0,00" />
+                <//>
+              </div>`}
+          </div>
+          <${Field} label="Preço que você pretende cobrar"><${Num} value=${draft.price} onChange=${v => patch({ price: v })} prefix="R$" placeholder="0,00" /><//>
+          <div className="rounded-2xl p-4 mt-3" style=${{ background: tonedBg, color: tonedFg }} role="status" aria-live="polite">
+            <div className="flex items-center gap-3">
+              <span className="w-5 h-5 rounded-full shrink-0" style=${{ background: dot[state] }}></span>
+              <p className="serif text-2xl font-bold flex items-center gap-2"><${Icon} name=${info.icon} size=${22} />${info.title}</p>
+            </div>
+            <p className="text-sm font-semibold mt-2">${info.text}</p>
+            <div className="flex gap-1.5 mt-3" aria-hidden="true">
+              ${['red', 'amb', 'grn'].map(k => html`<div key=${k} className="h-2 flex-1 rounded-full" style=${{ background: dot[k], opacity: state === k ? 1 : 0.25 }}></div>`)}
+            </div>
+          </div>
+          <dl className="mt-4 space-y-1.5 text-sm">
+            ${rows.map(([k, v]) => html`<div key=${k} className="flex justify-between gap-2"><dt className="text-mute">${k}</dt><dd className="nums font-bold">${brl(v)}</dd></div>`)}
+            <div className="flex justify-between gap-2 pt-2 border-t font-extrabold" style=${{ borderColor: 'var(--line)' }}><dt>Custo total + taxa</dt><dd className="nums">${brl(base + feeV)}</dd></div>
+          </dl>
+          <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
+            <div className="rounded-xl p-3" style=${{ background: 'var(--sand)' }}><p className="text-mute text-xs font-bold">Preço mínimo (empata)</p><p className="serif text-2xl font-bold">${brl(breakEven)}</p></div>
+            <div className="rounded-xl p-3" style=${{ background: 'var(--gold-soft)' }}><p className="text-bronze text-xs font-bold">Preço sugerido</p><p className="serif text-2xl font-bold text-bronze">${brl(suggested)}</p></div>
+          </div>
+          <button className="btn btn-ghost w-full mt-2" disabled=${base <= 0} onClick=${() => patch({ price: suggested.toFixed(2) })}>Usar preço sugerido</button>
+
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            <button className="btn btn-ghost" disabled=${draft.lines.length === 0} onClick=${() => onProduce(draft.lines, mat)}><${Icon} name="scissors" size=${18} />Dar baixa no estoque</button>
+            <button className="btn btn-gold" disabled=${price <= 0} onClick=${() => onSale(draft.name, price, mat, ship)}><${Icon} name="bag" size=${18} />Registrar venda</button>
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <button className="btn btn-dark" disabled=${!draft.name.trim()} onClick=${() => onSaveRecipe(draft)}><${Icon} name="save" size=${18} />${editingRecipe ? 'Atualizar ficha' : 'Salvar ficha'}</button>
+            <button className="btn btn-ghost" onClick=${() => setDraft(EMPTY_DRAFT)}><${Icon} name="plus" size=${18} />Nova ficha</button>
+          </div>
+          ${editingRecipe && html`<p className="text-xs text-mute mt-2">Editando a ficha “${editingRecipe.name}”. “Atualizar ficha” substitui os dados salvos.</p>`}
+        <//>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- RESULTADO (DRE) ---------- */
+function Dre({ month, cfg }) {
+  const d = computeDre(month, cfg);
+  const pos = d.profit >= 0;
+  const rows = [
+    { sign: '(+)', label: 'Faturamento bruto', tip: 'Tudo o que você vendeu', v: d.rev },
+    { sign: '(−)', label: 'Custo das bolsas vendidas', tip: 'O valor do material que saiu do estoque', v: -d.cogs },
+    { sign: '(−)', label: 'Despesas variáveis', tip: 'Taxas de cartão, maquininhas e frete de envio', v: -d.fees,
+      sub: [['Taxas de cartão', d.card], ['Frete de envio', d.ship]] },
+    { sign: '(=)', label: 'Margem de contribuição', tip: 'O que sobra para pagar as contas fixas', v: d.contrib, strong: true },
+    { sign: '(−)', label: 'Despesas fixas', tip: 'DAS-MEI, luz, internet e o seu salário', v: -d.fixed,
+      sub: [['DAS-MEI', d.das], ['Luz, internet e outras', d.other], ['Seu salário', d.salary]] },
+    { sign: '(=)', label: 'Lucro líquido real', tip: pos ? '🟢 Dinheiro para a empresa crescer' : '🔴 Prejuízo: o mês não pagou todas as contas', v: d.profit, strong: true, final: true }
+  ];
+  const pc = v => d.rev > 0 ? Math.max(0, v) / d.rev * 100 : 0;
+  const water = [
+    { label: 'Faturamento', start: 0, w: pc(d.rev), v: d.rev, color: 'linear-gradient(90deg,#E9C770,#C99644)' },
+    { label: 'Material', start: pc(d.rev - d.cogs), w: pc(d.cogs), v: -d.cogs, color: '#9A6B3A' },
+    { label: 'Taxas e frete', start: pc(d.rev - d.cogs - d.fees), w: pc(d.fees), v: -d.fees, color: '#B98F62' },
+    { label: 'Contas fixas', start: pc(d.contrib - d.fixed), w: Math.min(pc(d.fixed), pc(d.contrib)), v: -d.fixed, color: '#6E5543' },
+    { label: 'Lucro real', start: 0, w: pc(d.profit), v: d.profit, color: pos ? 'var(--grn)' : 'var(--red)' }
+  ];
+  const parts = [
+    { label: 'Material', v: d.cogs, color: '#9A6B3A' },
+    { label: 'Taxas e frete', v: d.fees, color: '#B98F62' },
+    { label: 'Contas fixas', v: d.fixed, color: '#6E5543' },
+    { label: 'Lucro', v: Math.max(0, d.profit), color: 'var(--grn)' }
+  ];
+  const tot = parts.reduce((s, p) => s + p.v, 0) || 1;
+  const per = v => d.rev > 0 ? v / d.rev : 0;
+  return html`
+  <div className="space-y-4">
+    <div>
+      <h1 className="serif text-3xl sm:text-4xl font-bold">Resultado do mês</h1>
+      <p className="text-mute">${MONTH_LABEL} · a saúde do seu negócio em linguagem simples</p>
+    </div>
+    ${d.rev === 0 && html`<div className="tone-gold rounded-xl p-3 text-sm font-bold flex gap-2"><${Icon} name="info" size=${18} className="shrink-0 mt-0.5" />Ainda não há vendas neste mês. Registre uma venda na aba “Custo da bolsa” e este resultado se preenche sozinho. As despesas fixas já aparecem porque vêm das suas configurações.</div>`}
+    <div className="grid gap-4 lg:grid-cols-2 items-start">
+      <${Section} title="Tabela do mês" sub="Cada linha vem com uma tradução.">
+        <div>
+          ${rows.map((r, i) => html`
+            <div key=${i} className=${'py-3 ' + (i ? 'border-t' : '')} style=${{ borderColor: 'var(--line)' }}>
+              <div className="flex items-baseline justify-between gap-3">
+                <p className=${r.strong ? 'font-extrabold' : 'font-bold'}><span className="text-mute nums mr-1.5">${r.sign}</span>${r.label}</p>
+                <p className="nums font-extrabold whitespace-nowrap" style=${{ color: r.final ? (pos ? 'var(--grn)' : 'var(--red)') : undefined, fontSize: r.final ? '1.25rem' : undefined }}>${brl(r.v)}</p>
+              </div>
+              <p className="text-sm text-mute mt-0.5">💡 ${r.tip}</p>
+              ${r.sub && html`<ul className="mt-1.5 text-xs text-mute space-y-0.5 pl-6">${r.sub.map(([k, v]) => html`<li key=${k} className="flex justify-between"><span>${k}</span><span className="nums">${brl(v)}</span></li>`)}</ul>`}
+            </div>`)}
+        </div>
+      <//>
+
+      <div className="space-y-4">
+        <${Section} title="O caminho do dinheiro" sub="Do que entrou até o que sobrou.">
+          <div className="space-y-3">
+            ${water.map(r => html`
+              <div key=${r.label}>
+                <div className="flex justify-between text-sm mb-1"><span className="font-bold">${r.label}</span><span className="nums font-bold">${brl(r.v)}</span></div>
+                <div className="relative h-7 rounded-lg" style=${{ background: 'var(--sand)' }}>
+                  <div className="bar absolute top-0 bottom-0 rounded-lg" style=${{ left: r.start + '%', width: Math.max(r.w, r.w > 0 ? 1.5 : 0) + '%', background: r.color }}></div>
+                </div>
+              </div>`)}
+          </div>
+          <div className="mt-5">
+            <p className="text-sm font-bold mb-1.5">Para cada R$ 1,00 vendido</p>
+            <div className="flex h-9 rounded-xl overflow-hidden" role="img" aria-label="Divisão de cada real vendido entre material, taxas, contas fixas e lucro" style=${{ background: 'var(--sand)' }}>
+              ${parts.map(p => html`<div key=${p.label} className="bar" style=${{ width: p.v / tot * 100 + '%', background: p.color }} title=${p.label}></div>`)}
+            </div>
+            <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 mt-3 text-sm">
+              ${parts.map(p => html`
+                <li key=${p.label} className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-sm shrink-0" style=${{ background: p.color }}></span>
+                  <span className="text-mute">${p.label}</span>
+                  <span className="nums font-bold ml-auto">${p.label === 'Lucro' ? brl(per(d.profit)) : brl(per(p.v))}</span>
+                </li>`)}
+            </ul>
+          </div>
+          ${d.rev > 0 && html`
+            <div className=${'rounded-xl p-3 mt-4 text-sm font-semibold ' + (pos ? 'tone-grn' : 'tone-red')}>
+              ${pos
+                ? `Sobram ${brl(d.profit)} neste mês, ${num(per(d.profit) * 100, 1)}% do que você vendeu. É o dinheiro para a empresa crescer.`
+                : `Faltaram ${brl(-d.profit)} para pagar todas as contas. Revise os preços na aba “Custo da bolsa”.`}
+            </div>`}
+        <//>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- APP (com dados do Supabase) ---------- */
+const TABS = [
+  { id: 'home', label: 'Início', icon: 'home' },
+  { id: 'stock', label: 'Estoque', icon: 'box' },
+  { id: 'cost', label: 'Custo da bolsa', icon: 'calc' },
+  { id: 'dre', label: 'Resultado', icon: 'chart' }
+];
+
+function App({ session }) {
+  const userId = session.user.id;
+  const [tab, setTab] = useState('home');
+  const [loading, setLoading] = useState(true);
+  const [stock, setStock] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [recipes, setRecipes] = useState([]);
+  const [cfg, setCfgState] = useState(DEFAULT_CFG);
+  const [cfgState, setCfgSaveState] = useState('');
+  const [draft, setDraft] = useState(EMPTY_DRAFT);
+  const [toast, setToast] = useState(null);
+  const tt = useRef();
+  const cfgTimer = useRef();
+
+  const say = (msg, kind = 'ok') => { clearTimeout(tt.current); setToast({ msg, kind }); tt.current = setTimeout(() => setToast(null), 5500); };
+  const fail = (what, error) => { say(`${what}: ${error.message}`, 'warn'); return false; };
+  const go = id => { setTab(id); window.scrollTo({ top: 0 }); };
+
+  /* carregar tudo */
+  const load = async () => {
+    setLoading(true);
+    const [a, b, c, e] = await Promise.all([
+      db.from('stock_items').select('*').order('name'),
+      db.from('sales').select('*').gte('sold_at', YEAR_START).order('sold_at', { ascending: false }),
+      db.from('recipes').select('*').order('name'),
+      db.from('settings').select('*').maybeSingle()
+    ]);
+    const error = a.error || b.error || c.error || e.error;
+    if (error) say('Não foi possível carregar os dados: ' + error.message, 'warn');
+    setStock((a.data || []).map(fixStock));
+    setSales((b.data || []).map(fixSale));
+    setRecipes((c.data || []).map(fixRecipe));
+    if (e.data) setCfgState(cfgFromRow(e.data));
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, [userId]);
+
+  /* configurações: salva sozinho */
+  const setCfg = next => {
+    setCfgState(next); setCfgSaveState('saving');
+    clearTimeout(cfgTimer.current);
+    cfgTimer.current = setTimeout(async () => {
+      const { error } = await db.from('settings').upsert({
+        user_id: userId, salary: n(next.salary), hours: n(next.hours), fixed: n(next.fixed), das: n(next.das),
+        fee: n(next.fee), target: n(next.target), year_base: n(next.yearBase), updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+      setCfgSaveState(error ? 'error' : 'saved');
+      if (error) fail('Não foi possível salvar as configurações', error);
+    }, 900);
+  };
+
+  /* estoque */
+  const addItem = async row => {
+    const { data, error } = await db.from('stock_items').insert(row).select().single();
+    if (error) return fail('Não foi possível cadastrar', error);
+    setStock(s => [...s, fixStock(data)].sort((x, y) => x.name.localeCompare(y.name, 'pt-BR')));
+    say(`${data.name} foi cadastrado no estoque.`);
+    return true;
+  };
+  const editItem = async (id, row) => {
+    const { data, error } = await db.from('stock_items').update(row).eq('id', id).select().single();
+    if (error) return fail('Não foi possível salvar', error);
+    setStock(s => s.map(i => i.id === id ? fixStock(data) : i).sort((x, y) => x.name.localeCompare(y.name, 'pt-BR')));
+    say(`${data.name} foi atualizado.`);
+    return true;
+  };
+  const delItem = async it => {
+    if (!window.confirm(`Excluir “${it.name}” do estoque? As fichas que usam este material vão avisar que ele foi removido.`)) return;
+    const { error } = await db.from('stock_items').delete().eq('id', it.id);
+    if (error) return fail('Não foi possível excluir', error);
+    setStock(s => s.filter(i => i.id !== it.id));
+    say(`${it.name} foi excluído.`);
+  };
+  const cutStock = async (it, area, cost) => {
+    const area2 = Math.max(0, it.area - area);
+    const { error } = await db.from('stock_items').update({ area: area2 }).eq('id', it.id);
+    if (error) return fail('Não foi possível dar baixa', error);
+    setStock(s => s.map(i => i.id === it.id ? { ...i, area: area2 } : i));
+    say(`Corte registrado: ${brl(cost)} de material saiu do estoque.`);
+  };
+  const produce = async (lines, mat) => {
+    const need = {};
+    lines.forEach(l => {
+      const it = stock.find(s => s.id === l.itemId);
+      if (!it) return;
+      need[it.id] = (need[it.id] || 0) + (it.kind === 'fabric' ? n(l.w) * n(l.h) : n(l.qty));
+    });
+    const short = stock.find(s => need[s.id] > (s.kind === 'fabric' ? s.area : s.qty));
+    if (short) return say(`Falta material no estoque: ${short.name}.`, 'warn');
+    const changes = stock.filter(s => need[s.id]).map(s => ({ id: s.id, patch: s.kind === 'fabric' ? { area: Math.max(0, s.area - need[s.id]) } : { qty: Math.max(0, s.qty - need[s.id]) } }));
+    const res = await Promise.all(changes.map(c => db.from('stock_items').update(c.patch).eq('id', c.id).then(r => ({ ...c, error: r.error }))));
+    const ok = res.filter(r => !r.error);
+    setStock(s => s.map(i => { const c = ok.find(x => x.id === i.id); return c ? { ...i, ...c.patch } : i; }));
+    const bad = res.find(r => r.error);
+    if (bad) return fail('Parte do estoque não foi atualizada', bad.error);
+    say(`Estoque atualizado: ${brl(mat)} em materiais usados nesta bolsa.`);
+  };
+
+  /* vendas */
+  const sale = async (name, price, mat, ship = 0) => {
+    const { data, error } = await db.from('sales').insert({ name: name.trim() || 'Bolsa sem nome', price, cogs: mat, ship }).select().single();
+    if (error) return fail('Não foi possível registrar a venda', error);
+    setSales(s => [fixSale(data), ...s]);
+    say(`Venda registrada: ${brl(price)}. Veja como ficou o mês em “Resultado”.`);
+  };
+  const delSale = async s => {
+    if (!window.confirm(`Excluir a venda “${s.name}” de ${brl(s.price)}? O estoque não volta sozinho.`)) return;
+    const { error } = await db.from('sales').delete().eq('id', s.id);
+    if (error) return fail('Não foi possível excluir a venda', error);
+    setSales(list => list.filter(x => x.id !== s.id));
+    say('Venda excluída.');
+  };
+
+  /* fichas */
+  const saveRecipe = async d => {
+    const row = { name: d.name.trim(), lines: d.lines, minutes: n(d.minutes), ship_on: d.shipOn, shipping: n(d.shipping), price: n(d.price), updated_at: new Date().toISOString() };
+    if (d.recipeId) {
+      const { data, error } = await db.from('recipes').update(row).eq('id', d.recipeId).select().single();
+      if (error) return fail('Não foi possível atualizar a ficha', error);
+      setRecipes(r => r.map(x => x.id === data.id ? fixRecipe(data) : x));
+      say(`Ficha “${data.name}” atualizada.`);
+    } else {
+      const { data, error } = await db.from('recipes').insert(row).select().single();
+      if (error) return fail('Não foi possível salvar a ficha', error);
+      setRecipes(r => [...r, fixRecipe(data)].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')));
+      setDraft(x => ({ ...x, recipeId: data.id }));
+      say(`Ficha “${data.name}” salva.`);
+    }
+  };
+  const delRecipe = async r => {
+    if (!window.confirm(`Excluir a ficha “${r.name}”?`)) return;
+    const { error } = await db.from('recipes').delete().eq('id', r.id);
+    if (error) return fail('Não foi possível excluir a ficha', error);
+    setRecipes(list => list.filter(x => x.id !== r.id));
+    if (draft.recipeId === r.id) setDraft(d => ({ ...d, recipeId: null }));
+    say('Ficha excluída.');
+  };
+
+  /* números do mês e do ano */
+  const monthStart = new Date(NOW.getFullYear(), NOW.getMonth(), 1).getTime();
+  const monthSales = useMemo(() => sales.filter(s => new Date(s.sold_at).getTime() >= monthStart), [sales]);
+  const month = useMemo(() => ({
+    revenue: monthSales.reduce((t, s) => t + s.price, 0),
+    cogs: monthSales.reduce((t, s) => t + s.cogs, 0),
+    ship: monthSales.reduce((t, s) => t + s.ship, 0),
+    bags: monthSales.length
+  }), [monthSales]);
+  const annual = n(cfg.yearBase) + sales.reduce((t, s) => t + s.price, 0);
+
+  if (loading) return html`<${Shell}><div className="flex items-center gap-3 text-mute font-bold"><${Icon} name="loader" className="spin" />Carregando seus dados…</div><//>`;
+
+  return html`
+  <div className="min-h-screen pb-28 md:pb-10">
+    <header className="sticky z-20" style=${{ top: 'env(safe-area-inset-top, 0px)', background: '#2E2119' }}>
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+        <${Butterfly} size=${44} />
+        <div className="leading-none">
+          <p className="serif text-xl sm:text-2xl font-semibold tracking-wide" style=${{ color: '#EFE9E4' }}>MARIE FARFALLA</p>
+          <p className="text-xs mt-1" style=${{ color: '#D9AE55' }}>Gestão do ateliê</p>
+        </div>
+        <nav className="hidden md:flex ml-auto gap-1" aria-label="Seções">
+          ${TABS.map(t => html`
+            <button key=${t.id} className="tabbtn flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm cursor-pointer border-0"
+              style=${{ background: tab === t.id ? 'linear-gradient(180deg,#E9C770,#C99644)' : 'transparent', color: tab === t.id ? '#2E2119' : '#EFE9E4' }}
+              aria-current=${tab === t.id ? 'page' : undefined} onClick=${() => go(t.id)}>
+              <${Icon} name=${t.icon} size=${18} />${t.label}
+            </button>`)}
+        </nav>
+        <button className="iconbtn ml-auto md:ml-0" style=${{ color: '#EFE9E4', borderColor: '#5A4838' }} aria-label="Sair" title="Sair" onClick=${() => db.auth.signOut()}><${Icon} name="logout" size=${18} /></button>
+      </div>
+    </header>
+
+    ${toast && html`
+      <div className="fixed z-40 inset-x-0 flex justify-center px-4 pointer-events-none" style=${{ top: 'calc(env(safe-area-inset-top, 0px) + 76px)' }}>
+        <div role="status" aria-live="polite" className=${'toast pointer-events-auto max-w-lg w-full rounded-2xl px-4 py-3 shadow-lg flex items-start gap-3 text-sm font-bold ' + (toast.kind === 'warn' ? 'tone-red' : 'tone-grn')} style=${{ border: '1px solid var(--line)' }}>
+          <${Icon} name=${toast.kind === 'warn' ? 'alert' : 'check'} size=${20} className="shrink-0" />
+          <span className="flex-1">${toast.msg}</span>
+          <button className="shrink-0" onClick=${() => setToast(null)} aria-label="Fechar aviso"><${Icon} name="x" size=${16} /></button>
+        </div>
+      </div>`}
+
+    <main className="max-w-6xl mx-auto px-4 py-5 sm:py-8">
+      ${tab === 'home' && html`<${Home} month=${month} monthSales=${monthSales} annual=${annual} cfg=${cfg} setCfg=${setCfg} cfgState=${cfgState} stock=${stock} onDelSale=${delSale} go=${go} />`}
+      ${tab === 'stock' && html`<${Stock} stock=${stock} onAdd=${addItem} onEdit=${editItem} onDelete=${delItem} onCut=${cutStock} />`}
+      ${tab === 'cost' && html`<${Cost} stock=${stock} cfg=${cfg} setCfg=${setCfg} cfgState=${cfgState} draft=${draft} setDraft=${setDraft} recipes=${recipes} onSaveRecipe=${saveRecipe} onDelRecipe=${delRecipe} onProduce=${produce} onSale=${sale} go=${go} />`}
+      ${tab === 'dre' && html`<${Dre} month=${month} cfg=${cfg} />`}
+      <footer className="mt-8 text-xs text-mute">
+        <p className="max-w-xl">Seus dados ficam salvos na nuvem e aparecem em qualquer aparelho em que você entrar. O teto do MEI usado é de ${brl(MEI_LIMIT)} por ano: confirme os valores oficiais no Portal do Empreendedor.</p>
+      </footer>
+    </main>
+
+    <nav className="md:hidden fixed inset-x-0 bottom-0 z-30 grid grid-cols-4" aria-label="Seções"
+      style=${{ background: '#2E2119', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      ${TABS.map(t => html`
+        <button key=${t.id} className="tabbtn flex flex-col items-center gap-1 py-2.5 text-[11px] font-bold cursor-pointer border-0 bg-transparent"
+          style=${{ color: tab === t.id ? '#E9C770' : '#C9BBAE' }} aria-current=${tab === t.id ? 'page' : undefined} onClick=${() => go(t.id)}>
+          <${Icon} name=${t.icon} size=${22} />${t.label}
+          <span className="h-0.5 w-6 rounded-full" style=${{ background: tab === t.id ? '#E9C770' : 'transparent' }}></span>
+        </button>`)}
+    </nav>
+  </div>`;
+}
+
+function Root() {
+  const [session, setSession] = useState(undefined);
+  useEffect(() => {
+    if (!CONFIGURED) return;
+    db.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data } = db.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => data.subscription.unsubscribe();
+  }, []);
+  if (!CONFIGURED) return html`<${Setup} />`;
+  if (session === undefined) return html`<${Shell}><div className="flex items-center gap-3 text-mute font-bold"><${Icon} name="loader" className="spin" />Carregando…</div><//>`;
+  if (!session) return html`<${Login} />`;
+  return html`<${App} session=${session} key=${session.user.id} />`;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${Root} />`);
+</script>
+</body>
+</html>
